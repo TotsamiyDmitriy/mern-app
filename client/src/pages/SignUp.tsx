@@ -1,12 +1,14 @@
 import axios, { AxiosError } from 'axios';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AxiosSignUpType } from '../types/signUp';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setFormData({
@@ -24,6 +26,7 @@ const SignUp = () => {
       setLoading(false);
       console.log('User created successfully!');
       setError(null);
+      navigate('/sign-in');
     } catch (error) {
       console.log(error);
 
