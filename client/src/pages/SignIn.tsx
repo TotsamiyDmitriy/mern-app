@@ -6,6 +6,7 @@ import { useAppDispatch } from '../redux/hooks';
 
 import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
 import { useSelector } from 'react-redux';
+import OAuth from '../components/OAuth';
 
 const SignIn = () => {
   const [formData, setFormData] = useState({});
@@ -70,11 +71,7 @@ const SignIn = () => {
           className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
           {loading ? 'loading' : 'Sign in'}
         </button>
-        <button
-          type="button"
-          className=" bg-red-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
-          {loading ? 'loading' : 'continue with Google'}
-        </button>
+        <OAuth dispatch={dispatch} navigate={navigate} />
         <span className="text-red-500">{error ? error : ''}</span>
         <div className="flex gap-2 mt-5">
           <p>Dont have account?</p>

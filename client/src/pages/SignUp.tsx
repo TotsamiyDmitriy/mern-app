@@ -2,13 +2,19 @@ import axios, { AxiosError } from 'axios';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AxiosSignUpType } from '../types/signUp';
+import OAuth from '../components/OAuth';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { signInFailure, signInStart, signInSuccess } from '../redux/user/userSlice';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const { loading, error } = useAppSelector(({ userReducer }) => ({
+    loading: userReducer.loading,
+    error: userReducer.error,
+  }));
 
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setFormData({
@@ -19,23 +25,21 @@ const SignUp = () => {
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    dispatch(signInStart());
 
     try {
-      await axios.post<AxiosSignUpType>('api/auth/signup', formData);
-      setLoading(false);
+      const { data } = await axios.post<AxiosSignUpType>('api/auth/signup', formData);
+      dispatch(signInSuccess(data));
       console.log('User created successfully!');
-      setError(null);
       navigate('/sign-in');
     } catch (error) {
       console.log(error);
 
       if (typeof error === 'string') {
-        setError(error.toUpperCase());
+        dispatch(signInFailure(error.toUpperCase()));
       } else if (error instanceof AxiosError) {
         const message = error.response?.data.message;
-        setError(message);
-        setLoading(false);
+        dispatch(signInFailure(message));
       }
     }
   };
@@ -71,6 +75,7 @@ const SignUp = () => {
           disabled={loading}>
           {loading ? 'loading' : 'Sign up'}
         </button>
+        <OAuth dispatch={dispatch} navigate={navigate} />
         <span className="text-red-500">{error ? error : ''}</span>
         <div className="flex gap-2 mt-5">
           <p>Have an account?</p>
