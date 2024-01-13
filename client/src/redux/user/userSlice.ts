@@ -8,6 +8,7 @@ loading : boolean
 
 interface User {
 	username : string, 
+	photoURL : string,
 	email : string
 }
 

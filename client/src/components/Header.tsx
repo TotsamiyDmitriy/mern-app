@@ -1,8 +1,13 @@
 import React from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { useAppSelector } from '../redux/hooks';
 
 const Header: React.FC<unknown> = () => {
+  const { currentUser } = useAppSelector(({ userReducer }) => ({
+    currentUser: userReducer.currentUser,
+  }));
+
   return (
     <header className=" bg-slate-200 shadow-md">
       <div className="flex justify-between items-center max-w-6xl mx-auto p-3">
@@ -18,15 +23,23 @@ const Header: React.FC<unknown> = () => {
           />
           <FaSearch className="text-slate-600" />
         </form>
-        <ul className="flex gap-4 ">
+        <ul className="flex gap-4 items-center">
           <Link to="/" className="hidden sm:inline text-slate-700 hover:underline">
-            Home
+            <li> Home </li>
           </Link>
           <Link to="/about" className="hidden sm:inline text-slate-700 hover:underline">
-            About
+            <li>About</li>
           </Link>
-          <Link to="/sign-in" className="hidden sm:inline text-slate-700 hover:underline">
-            Sign in
+          <Link to="/profile" className="hidden sm:inline text-slate-700 hover:underline">
+            {currentUser ? (
+              <img
+                className=" rounded-full w-7 h-7 mx-1 object-cover"
+                src={currentUser.photoURL}
+                alt="profile"
+              />
+            ) : (
+              <li> Sign in </li>
+            )}
           </Link>
         </ul>
       </div>
