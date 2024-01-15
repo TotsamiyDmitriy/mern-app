@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     photoURL: {
       type: String,
       default:
-        'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.freeiconspng.com%2Fimages%2Fprofile-icon-png&psig=AOvVaw0mQtMaP8sb4S5J7Sie3Llw&ust=1705115224596000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIjPka3v1oMDFQAAAAAdAAAAABAw',
+        'https://firebasestorage.googleapis.com/v0/b/mern-estate-80ea6.appspot.com/o/1705229964517Photo_2Mb.jpg?alt=media&token=07b5bd1d-3f9a-471a-88b7-f1b4981034e8',
     },
   },
   { timestamps: true },

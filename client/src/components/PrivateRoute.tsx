@@ -2,7 +2,7 @@ import React from 'react';
 import { useAppSelector } from '../redux/hooks';
 import { Outlet, Navigate } from 'react-router-dom';
 
-const PrivateRoute = () => {
+const PrivateRoute: React.FC<unknown> = () => {
   const { currentUser } = useAppSelector(({ userReducer }) => ({
     currentUser: userReducer.currentUser,
   }));

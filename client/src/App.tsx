@@ -4,7 +4,7 @@ import { About, Home, Profile, SignIn, SignUp } from './pages';
 import { Header } from './components';
 import PrivateRoute from './components/PrivateRoute';
 
-function App() {
+const App: React.FC<unknown> = () => {
   return (
     <BrowserRouter>
       <Header></Header>
@@ -19,6 +19,6 @@ function App() {
       </Routes>
     </BrowserRouter>
   );
-}
+};
 
 export default App;
