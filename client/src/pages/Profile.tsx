@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import {
   StorageError,
   getDownloadURL,
@@ -8,17 +8,34 @@ import {
   uploadBytesResumable,
 } from 'firebase/storage';
 import { app } from '../utils/firebase';
+import {
+  deleteUserFailed,
+  deleteUserStart,
+  deleteUserSuccess,
+  signOutFailed,
+  signOutStart,
+  signOutSuccess,
+  updateUserFailed,
+  updateUserStart,
+  updateUserSuccess,
+} from '../redux/user/userSlice';
+import axios, { AxiosError, AxiosResponse } from 'axios';
+import { User } from '../types/userSlice';
 
 interface formDataType {
   password?: string;
   username?: string;
   email?: string;
-  photoURL: string;
+  photoURL?: string;
 }
 
 const Profile: React.FC<unknown> = () => {
   const fileRef = React.useRef<HTMLInputElement | null>(null);
-  const currentUser = useAppSelector(({ userReducer }) => userReducer.currentUser);
+  const { currentUser, loading, error } = useAppSelector(({ userReducer }) => ({
+    currentUser: userReducer.currentUser,
+    loading: userReducer.loading,
+    error: userReducer.error,
+  }));
 
   const [file, setFile] = useState<File | undefined>(undefined);
   const [uploadPerc, setUploadPerc] = useState<number | null>(null);
@@ -26,8 +43,11 @@ const Profile: React.FC<unknown> = () => {
 
   const [formData, setFormData] = useState<formDataType | null>(null);
 
+  const dispatch = useAppDispatch();
+
   React.useEffect(() => {
     if (file instanceof File) handleFileUpload(file);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file]);
 
   const handleFileUpload = (file: File) => {
@@ -60,10 +80,67 @@ const Profile: React.FC<unknown> = () => {
     }
   };
 
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+    console.log(formData);
+  };
+
+  const handleDelete: React.MouseEventHandler<HTMLSpanElement> = async () => {
+    try {
+      dispatch(deleteUserStart());
+      const { data } = await axios.delete(`/api/user/delete/${currentUser?._id}`);
+      dispatch(deleteUserSuccess(data));
+    } catch (error) {
+      console.log(error);
+      if (typeof error === 'string') {
+        dispatch(deleteUserFailed(error.toUpperCase()));
+      } else if (error instanceof AxiosError) {
+        const message = error.response?.data.message;
+        dispatch(deleteUserFailed(message));
+      }
+    }
+  };
+
+  const handleSignOut: React.MouseEventHandler<HTMLSpanElement> = async () => {
+    try {
+      dispatch(signOutStart());
+      const { data } = await axios.get('/api/auth/signout');
+      dispatch(signOutSuccess(data));
+    } catch (error) {
+      console.log(error);
+      if (typeof error === 'string') {
+        dispatch(signOutFailed(error.toUpperCase()));
+      } else if (error instanceof AxiosError) {
+        const message = error.response?.data.message;
+        dispatch(signOutFailed(message));
+      }
+    }
+  };
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault();
+    try {
+      dispatch(updateUserStart());
+      const { data } = await axios.post<User, AxiosResponse<User>>(
+        `/api/user/update/${currentUser?._id}`,
+        formData,
+      );
+      dispatch(updateUserSuccess(data));
+    } catch (error) {
+      console.log(error);
+      if (typeof error === 'string') {
+        dispatch(updateUserFailed(error.toUpperCase()));
+      } else if (error instanceof AxiosError) {
+        const message = error.response?.data.message;
+        dispatch(updateUserFailed(message));
+      }
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
-      <form className="flex flex-col gap-4">
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <input type="file" onChange={FileSeterOnChange} ref={fileRef} accept="image/*" hidden />
 
         <img
@@ -85,22 +162,44 @@ const Profile: React.FC<unknown> = () => {
           ''
         )}
 
-        <input type="text" className="border p-3 rounded-lg" placeholder="Username" id="username" />
-        <input type="email" className="border p-3 rounded-lg" placeholder="email" id="email" />
+        <input
+          type="text"
+          className="border p-3 rounded-lg"
+          defaultValue={currentUser?.username}
+          placeholder="Username"
+          id="username"
+          onChange={handleChange}
+        />
+        <input
+          type="email"
+          className="border p-3 rounded-lg"
+          defaultValue={currentUser?.email}
+          placeholder="email"
+          id="email"
+          onChange={handleChange}
+        />
         <input
           type="password"
           className="border p-3 rounded-lg"
           placeholder="password"
           id="password"
+          onChange={handleChange}
         />
-        <button className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
-          update
+        <button
+          className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80"
+          disabled={loading}>
+          {loading ? 'Loading...' : 'Update'}
         </button>
       </form>
       <div className="flex justify-between mt-5">
-        <span className="text-red-700 cursor-pointer">Delete Account</span>
-        <span className="text-red-700 cursor-pointer">Sign out</span>
+        <span className="text-red-700 cursor-pointer" onClick={handleDelete}>
+          Delete Account
+        </span>
+        <span className="text-red-700 cursor-pointer" onClick={handleSignOut}>
+          Sign out
+        </span>
       </div>
+      <span className="text-red-700">{error ? error : ''}</span>
     </div>
   );
 };

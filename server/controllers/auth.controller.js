@@ -36,6 +36,17 @@ export const signIn = async (req, res, next) => {
   }
 };
 
+export const signOut = async (req, res, next) => {
+  try {
+    res
+      .clearCookie('access_token')
+      .status(200)
+      .json({ success: true, message: 'Sign out successfully!' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const google = async (req, res, next) => {
   try {
     const user = await User.findOne({ email: req.body.email });

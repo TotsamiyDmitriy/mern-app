@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { AxiosSignUpType } from '../types/signUp';
+
 import { useAppDispatch } from '../redux/hooks';
 
 import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
 import { useSelector } from 'react-redux';
 import OAuth from '../components/OAuth';
+import { User } from '../types/userSlice';
 
 const SignIn = () => {
   const [formData, setFormData] = useState({});
@@ -30,10 +31,7 @@ const SignIn = () => {
     e.preventDefault();
     dispatch(signInStart());
     try {
-      const { data } = await axios.post<AxiosSignUpType, AxiosResponse<AxiosSignUpType>>(
-        'api/auth/signin',
-        formData,
-      );
+      const { data } = await axios.post<User, AxiosResponse<User>>('api/auth/signin', formData);
       dispatch(signInSuccess(data));
       navigate('/');
     } catch (error) {
