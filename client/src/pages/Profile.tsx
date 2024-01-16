@@ -21,6 +21,7 @@ import {
 } from '../redux/user/userSlice';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { User } from '../types/userSlice';
+import { Link } from 'react-router-dom';
 
 interface formDataType {
   password?: string;
@@ -190,6 +191,11 @@ const Profile: React.FC<unknown> = () => {
           disabled={loading}>
           {loading ? 'Loading...' : 'Update'}
         </button>
+        <Link
+          to={'/create-listing'}
+          className="bg-green-700 text-white rounded-lg p-3 uppercase text-center hover:opacity-95 disabled:opacity-80">
+          Create Listing
+        </Link>
       </form>
       <div className="flex justify-between mt-5">
         <span className="text-red-700 cursor-pointer" onClick={handleDelete}>

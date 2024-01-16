@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { About, Home, Profile, SignIn, SignUp } from './pages';
 import { Header } from './components';
 import PrivateRoute from './components/PrivateRoute';
+import CreateListing from './pages/CreateListing';
 
 const App: React.FC<unknown> = () => {
   return (
@@ -14,6 +15,7 @@ const App: React.FC<unknown> = () => {
         <Route path="/sign-in" element={<SignIn />}></Route>
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />}></Route>
+          <Route path="/create-listing" element={<CreateListing />}></Route>
         </Route>
         <Route path="/about" element={<About />}></Route>
       </Routes>

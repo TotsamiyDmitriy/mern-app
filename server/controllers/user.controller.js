@@ -2,11 +2,13 @@ import User from '../models/user.model.js';
 import { errorHandler } from '../utils/error.js';
 import bcryptjs from 'bcryptjs';
 
-export const test = (req, res) => {
-  res.json({
-    success: true,
-    message: 'Hello World!',
-  });
+export const test = async (req, res, next) => {
+  try {
+    const currentUser = await User.findById(req.user.id);
+    res.status(200).json({ success: true, user: currentUser });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const updateUser = async (req, res, next) => {
