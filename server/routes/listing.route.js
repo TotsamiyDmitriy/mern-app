@@ -6,8 +6,6 @@ const router = express.Router();
 
 router.post('/create', verifyToken, createListing);
 
-router.post('/create', createListing);
-
 router.post('/update', verifyToken, createListing);
 
 router.delete('/delete', verifyToken, createListing);
