@@ -1,12 +1,12 @@
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
-import React, { useState } from 'react';
-import { app } from '../utils/firebase';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { useAppSelector } from '../redux/hooks';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import { ListingType } from '../types/listing';
+import { useAppSelector } from '../redux/hooks';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
+import { app } from '../utils/firebase';
 
-const CreateListing: React.FC = () => {
+const UpdateListing: React.FC = () => {
   const [files, setFiles] = useState<FileList | null>(null);
   const [formData, setFormData] = useState<ListingType>({
     imageURLs: [],
@@ -31,7 +31,20 @@ const CreateListing: React.FC = () => {
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
 
   const currentUser = useAppSelector(({ userReducer }) => userReducer.currentUser);
+  const params = useParams();
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const fetchListing = async () => {
+      const { data } = await axios.get(`/api/listing/get/${params.id}`);
+      console.log(data);
+      if (data.success === false) {
+        return;
+      }
+      setFormData(data);
+    };
+    fetchListing();
+  }, []);
 
   const handleImagesSubmit: React.MouseEventHandler<HTMLButtonElement> = async () => {
     if (files && files?.length > 0 && files.length < 7) {
@@ -118,13 +131,13 @@ const CreateListing: React.FC = () => {
     e.preventDefault();
     try {
       if (formData.imageURLs.length < 1) return setError('You must upload at least one image');
-      if (formData.regularPrice < formData.discountPrice)
+      if (+formData.regularPrice < +formData.discountPrice)
         return setError('Discount price must be lower than regular price');
 
       setIsLoading(true);
       setError(null);
       const { data } = await axios.post<ListingType, AxiosResponse<ListingType>>(
-        '/api/listing/create',
+        `/api/listing/update/${params.id}`,
         { ...formData, userRef: currentUser?._id },
       );
       console.log(data);
@@ -141,7 +154,7 @@ const CreateListing: React.FC = () => {
 
   return (
     <main className="p-3 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-semibold text-center my-7">Create listing</h1>
+      <h1 className="text-3xl font-semibold text-center my-7">Update a listing</h1>
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4">
         <div className="flex flex-col gap-4 flex-1">
           <input
@@ -313,7 +326,8 @@ const CreateListing: React.FC = () => {
             </button>
             <span className="text-red-600 tex-sm">{imageUploadError ? imageUploadError : ''}</span>
           </div>
-          {formData.imageURLs.length > 0 &&
+          {formData.imageURLs &&
+            formData.imageURLs.length > 0 &&
             formData.imageURLs.map((url, id) => {
               return (
                 <div
@@ -337,7 +351,7 @@ const CreateListing: React.FC = () => {
           <button
             className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-4"
             disabled={isLoading || !!progressImage}>
-            {isLoading ? 'Creating...' : 'Create listing'}
+            {isLoading ? 'Updating...' : 'Update listing'}
           </button>
           {error ? <span className="text-red-500">{error}</span> : ''}
         </div>
@@ -346,4 +360,4 @@ const CreateListing: React.FC = () => {
   );
 };
 
-export default CreateListing;
+export default UpdateListing;

@@ -22,6 +22,7 @@ import {
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { User } from '../types/userSlice';
 import { Link } from 'react-router-dom';
+import { ListingType } from '../types/listing';
 
 interface formDataType {
   password?: string;
@@ -41,8 +42,12 @@ const Profile: React.FC<unknown> = () => {
   const [file, setFile] = useState<File | undefined>(undefined);
   const [uploadPerc, setUploadPerc] = useState<number | null>(null);
   const [uploadError, setUploadError] = useState<StorageError | null>(null);
+  const [ShowListingError, setShowListingError] = useState<string | null>(null);
+
+  const [success, setSuccess] = useState(false);
 
   const [formData, setFormData] = useState<formDataType | null>(null);
+  const [listings, setListings] = useState<ListingType[]>([]);
 
   const dispatch = useAppDispatch();
 
@@ -121,12 +126,14 @@ const Profile: React.FC<unknown> = () => {
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     try {
+      setSuccess(false);
       dispatch(updateUserStart());
       const { data } = await axios.post<User, AxiosResponse<User>>(
         `/api/user/update/${currentUser?._id}`,
         formData,
       );
       dispatch(updateUserSuccess(data));
+      setSuccess(true);
     } catch (error) {
       console.log(error);
       if (typeof error === 'string') {
@@ -134,6 +141,44 @@ const Profile: React.FC<unknown> = () => {
       } else if (error instanceof AxiosError) {
         const message = error.response?.data.message;
         dispatch(updateUserFailed(message));
+      }
+    }
+  };
+
+  const handleShowListings: React.MouseEventHandler<HTMLButtonElement> = async () => {
+    try {
+      setShowListingError(null);
+      const { data } = await axios.get<ListingType[], AxiosResponse<ListingType[]>>(
+        `/api/listing/${currentUser?._id}`,
+      );
+      if (data.length <= 0) {
+        setShowListingError('User has not listings');
+      }
+      setListings(data);
+    } catch (error) {
+      if (typeof error === 'string') {
+        setShowListingError(error.toUpperCase());
+      } else if (error instanceof AxiosError) {
+        const message = error.response?.data.message;
+        setShowListingError(message);
+      }
+    }
+  };
+
+  const handleDeleteListing = async (id: string | undefined) => {
+    try {
+      setShowListingError(null);
+      const { data } = await axios.delete<ListingType, AxiosResponse<ListingType>>(
+        `api/listing/delete/${id}`,
+      );
+      console.log(data);
+      setListings(listings.filter((listing) => listing._id !== data._id));
+    } catch (error) {
+      if (typeof error === 'string') {
+        setShowListingError(error.toUpperCase());
+      } else if (error instanceof AxiosError) {
+        const message = error.response?.data.message;
+        setShowListingError(message);
       }
     }
   };
@@ -205,7 +250,61 @@ const Profile: React.FC<unknown> = () => {
           Sign out
         </span>
       </div>
-      <span className="text-red-700">{error ? error : ''}</span>
+      <div className="flex flex-col items-center pt-6">
+        <span className="text-red-700">{error ? error : ''}</span>
+        <span className="text-green-700">{success && 'User is updated successfully!'}</span>
+      </div>
+      <button
+        type="button"
+        onClick={handleShowListings}
+        className="text-green-700 w-full mb-4"
+        disabled={loading}>
+        Show listings
+      </button>
+      {ShowListingError && <div className="text-red-700 mb-4">{ShowListingError}</div>}
+      <div className="flex flex-col gap-4">
+        {listings.length ? (
+          <h1 className="text-center mt-7 text-2xl font-semibold">{'Your Listings'}</h1>
+        ) : (
+          ''
+        )}
+        {listings.length > 0 &&
+          listings.map((listing, id) => (
+            <div
+              key={`div_${id}`}
+              className="flex flex-row items-center justify-between p-3 border border-gray-300 rounded-lg gap-4">
+              <Link to={`/listing/${listing._id}`}>
+                <img
+                  key={`img_${id}`}
+                  className="w-20 h-20 p-2 border border-gray-300 object-contain rounded-lg"
+                  src={listing.imageURLs[0]}
+                  alt={`image_${id}`}
+                />
+              </Link>
+              <Link
+                className="text-slate-700 font-semibold flex-1 hover:underline truncate"
+                to={`/listing/${listing._id}`}>
+                <p>{listing.name}</p>
+              </Link>
+              <div className="flex flex-col items-center">
+                <button
+                  type="button"
+                  onClick={() => handleDeleteListing(listing._id)}
+                  className="p-3 text-red-700 rounded-lg uppercase">
+                  Delete
+                </button>
+                <Link to={`/edit-listing/${listing._id}`}>
+                  <button
+                    type="button"
+                    onClick={() => {}}
+                    className="p-3 text-green-700 rounded-lg uppercase">
+                    Edit
+                  </button>
+                </Link>
+              </div>
+            </div>
+          ))}
+      </div>
     </div>
   );
 };
