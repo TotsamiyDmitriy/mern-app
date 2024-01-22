@@ -5,6 +5,7 @@ import { Header } from './components';
 import PrivateRoute from './components/PrivateRoute';
 import CreateListing from './pages/CreateListing';
 import UpdateListing from './pages/UpdateListing';
+import Listing from './pages/Listing';
 
 const App: React.FC<unknown> = () => {
   return (
@@ -12,6 +13,7 @@ const App: React.FC<unknown> = () => {
       <Header></Header>
       <Routes>
         <Route path="/" element={<Home />}></Route>
+        <Route path="/listing/:id" element={<Listing />}></Route>
         <Route path="/sign-up" element={<SignUp />}></Route>
         <Route path="/sign-in" element={<SignIn />}></Route>
         <Route element={<PrivateRoute />}>
