@@ -10,11 +10,16 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css/bundle';
 import { Navigation } from 'swiper/modules';
 import { FaBath, FaBed, FaChair, FaMapMarkerAlt, FaParking } from 'react-icons/fa';
+import { useAppSelector } from '../redux/hooks';
+import Contact from './Contact';
 
 const Listing: React.FC = () => {
   const [listing, setListing] = useState<ListingType | null>(null);
   const [loading, setLoading] = useState(true);
+  const [contact, setContact] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const currentUser = useAppSelector(({ userReducer }) => userReducer.currentUser);
 
   const params = useParams();
 
@@ -50,13 +55,9 @@ const Listing: React.FC = () => {
           <Swiper navigation>
             {listing.imageURLs.map((url) => (
               <SwiperSlide key={url}>
-                <div
-                  key={url}
-                  className="h-[550px]"
-                  style={{
-                    background: `url(${url}) center no-repeat`,
-                    backgroundSize: 'cover',
-                  }}></div>
+                <div key={url} className="h-[550px]">
+                  <img src={url} alt={url} className="w-full object-cover object-center" />
+                </div>
               </SwiperSlide>
             ))}
           </Swiper>
@@ -69,7 +70,7 @@ const Listing: React.FC = () => {
               {listing.type === 'rent' && ' / month'}
             </p>
             <p className="flex items-center mt-6 gap-2 text-slate-600 my-2 text-sm">
-              <FaMapMarkerAlt />
+              <FaMapMarkerAlt className="text-green-900" />
               {listing.address}
             </p>
             <div className="flex gap-4">
@@ -104,6 +105,15 @@ const Listing: React.FC = () => {
                 {listing.furnished ? `Furnished` : `Unfurnished`}
               </li>
             </ul>
+            {currentUser && listing.userRef !== currentUser._id && !contact && (
+              <button
+                type="button"
+                onClick={() => setContact(true)}
+                className="bg-slate-700 uppercase text-white rounded-lg hover:opacity:95 p-3">
+                Contact landlord
+              </button>
+            )}
+            {contact && <Contact listing={listing}></Contact>}
           </div>
         </div>
       )}

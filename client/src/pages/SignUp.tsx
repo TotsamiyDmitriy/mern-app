@@ -1,10 +1,10 @@
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AxiosSignUpType } from '../types/signUp';
 import OAuth from '../components/OAuth';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { signInFailure, signInStart, signInSuccess } from '../redux/user/userSlice';
+import { signInFailure, signInStart } from '../redux/user/userSlice';
+import { User } from '../types/userSlice';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({});
@@ -28,9 +28,8 @@ const SignUp = () => {
     dispatch(signInStart());
 
     try {
-      const { data } = await axios.post<AxiosSignUpType>('api/auth/signup', formData);
-      dispatch(signInSuccess(data));
-      console.log('User created successfully!');
+      const { data } = await axios.post<User, AxiosResponse<User>>('api/auth/signup', formData);
+      console.log('User created successfully!', data);
       navigate('/sign-in');
     } catch (error) {
       console.log(error);

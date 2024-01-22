@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     photoURL: {
       type: String,
       default:
-        'https://firebasestorage.googleapis.com/v0/b/mern-estate-80ea6.appspot.com/o/1705229964517Photo_2Mb.jpg?alt=media&token=07b5bd1d-3f9a-471a-88b7-f1b4981034e8',
+        'https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=',
     },
   },
   { timestamps: true },

@@ -2,10 +2,12 @@ import User from '../models/user.model.js';
 import { errorHandler } from '../utils/error.js';
 import bcryptjs from 'bcryptjs';
 
-export const test = async (req, res, next) => {
+export const getCurrentUser = async (req, res, next) => {
   try {
     const currentUser = await User.findById(req.user.id);
-    res.status(200).json({ success: true, user: currentUser });
+    if (!currentUser) return next(errorHandler(404, 'User not found!'));
+    const { password, ...rest } = currentUser._doc;
+    res.status(200).json({ success: true, user: rest });
   } catch (error) {
     next(error);
   }
@@ -49,6 +51,17 @@ export const deleteUser = async (req, res, next) => {
       success: true,
       message: 'User delete successfully!',
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUser = async (req, res, next) => {
+  try {
+    const currentUser = await User.findById(req.params.id);
+    if (!currentUser) return next(errorHandler(404, 'User not found!'));
+    const { password, ...rest } = currentUser._doc;
+    res.status(200).json(rest);
   } catch (error) {
     next(error);
   }
