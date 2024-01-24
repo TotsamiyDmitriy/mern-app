@@ -118,9 +118,9 @@ const CreateListing: React.FC = () => {
     e.preventDefault();
     try {
       if (formData.imageURLs.length < 1) return setError('You must upload at least one image');
-      if (formData.regularPrice < formData.discountPrice)
+      if (formData.regularPrice < formData.discountPrice) {
         return setError('Discount price must be lower than regular price');
-
+      }
       setIsLoading(true);
       setError(null);
       const { data } = await axios.post<ListingType, AxiosResponse<ListingType>>(
