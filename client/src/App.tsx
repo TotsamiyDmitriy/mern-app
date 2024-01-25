@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { About, Home, Profile, SignIn, SignUp } from './pages';
+import { About, Home, Profile, Search, SignIn, SignUp } from './pages';
 import { Header } from './components';
 import PrivateRoute from './components/PrivateRoute';
 import CreateListing from './pages/CreateListing';
@@ -16,6 +16,7 @@ const App: React.FC<unknown> = () => {
         <Route path="/listing/:id" element={<Listing />}></Route>
         <Route path="/sign-up" element={<SignUp />}></Route>
         <Route path="/sign-in" element={<SignIn />}></Route>
+        <Route path="/search" element={<Search />}></Route>
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />}></Route>
           <Route path="/create-listing" element={<CreateListing />}></Route>
