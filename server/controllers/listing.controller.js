@@ -24,12 +24,12 @@ export const getUserListings = async (req, res, next) => {
 };
 
 export const getOneUserListing = async (req, res, next) => {
-  const listing = await Listing.findById(req.params.id);
-  if (!listing) {
-    next(errorHandler(404, 'Listing not found!'));
-  }
-
   try {
+    const listing = await Listing.findById(req.params.id);
+    if (!listing) {
+      next(errorHandler(404, 'Listing not found!'));
+    }
+
     res.status(200).json(listing);
   } catch (error) {
     next(error);

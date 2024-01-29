@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ListingType } from '../types/listing';
 import axios, { AxiosResponse } from 'axios';
+import ListingCard from '../components/ListingCard';
 
 interface SidebarDataType {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -27,6 +28,8 @@ const Search: React.FC = () => {
   });
   const [listings, setListings] = useState<ListingType[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const [showMore, setShowMore] = useState(false);
 
   const navigate = useNavigate();
 
@@ -58,6 +61,9 @@ const Search: React.FC = () => {
       const { data } = await axios.get<ListingType[], AxiosResponse<ListingType[]>>(
         `/api/listing/get?${searchQuery}`,
       );
+      if (data.length > 8) {
+        setShowMore(true);
+      }
       setListings(data);
       setLoading(false);
       console.log(data);
@@ -87,6 +93,19 @@ const Search: React.FC = () => {
 
       setSidebarData({ ...sidebarData, sort, order });
     }
+  };
+
+  const onShowMoreClick: React.MouseEventHandler<HTMLButtonElement> = async (e) => {
+    e.preventDefault();
+    const numberOfListings = listings.length;
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set('startIndex', `${numberOfListings}`);
+    const searchQuery = urlParams.toString();
+    const { data } = await axios.get(`/api/listing/get?${searchQuery}`);
+    if (data.length < 9) {
+      setShowMore(false);
+    }
+    setListings([...listings, ...data]);
   };
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
@@ -203,6 +222,24 @@ const Search: React.FC = () => {
         <h1 className="text-3xl font-semibold border-b p-3 text-slate-700 mt-5">
           Listing results:
         </h1>
+        <div className="p-7 flex flex-wrap gap-4">
+          {!loading && listings.length === 0 && (
+            <p className="text-xt text-slate-700">No listing found!</p>
+          )}
+          {loading && <p className="text-xl text-slate-700 text-center w-full">Loading...</p>}
+          {!loading &&
+            listings &&
+            listings.map((listing) => (
+              <ListingCard key={listing._id} listing={listing}></ListingCard>
+            ))}
+          {showMore && (
+            <button
+              onClick={onShowMoreClick}
+              className="text-green-700 hover:underline p-7 text-center w-full">
+              Show more
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

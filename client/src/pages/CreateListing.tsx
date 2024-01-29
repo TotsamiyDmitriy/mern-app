@@ -92,7 +92,7 @@ const CreateListing: React.FC = () => {
   };
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (e) => {
-    if (e.target.id === 'rent' || e.target.id === 'sell') {
+    if (e.target.id === 'rent' || e.target.id === 'sale') {
       setFormData({
         ...formData,
         type: e.target.id,
@@ -118,7 +118,7 @@ const CreateListing: React.FC = () => {
     e.preventDefault();
     try {
       if (formData.imageURLs.length < 1) return setError('You must upload at least one image');
-      if (formData.regularPrice < formData.discountPrice) {
+      if (+formData.regularPrice < +formData.discountPrice) {
         return setError('Discount price must be lower than regular price');
       }
       setIsLoading(true);
@@ -180,12 +180,12 @@ const CreateListing: React.FC = () => {
               <input
                 type="checkbox"
                 className="w-5"
-                name="sell"
+                name="sale"
                 onChange={handleChange}
-                checked={formData.type === 'sell'}
-                id="sell"
+                checked={formData.type === 'sale'}
+                id="sale"
               />
-              <label htmlFor="sell">Sell</label>
+              <label htmlFor="sale">Sale</label>
               <input
                 type="checkbox"
                 className="w-5"

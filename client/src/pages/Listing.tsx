@@ -83,8 +83,8 @@ const Listing: React.FC = () => {
                 </p>
               )}
             </div>
-            <p className="text-slate-800">
-              <span className="font-semibold text-black">Description - </span>
+            <p className="text-slate-800 ">
+              <span className="font-semibold text-black text-wrap">Description - </span>
               {listing.description}
             </p>
             <ul className="flex flex-row flex-wrap items-center gap-4 sm:gap-6 text-green-900 font-semibold text-sm">

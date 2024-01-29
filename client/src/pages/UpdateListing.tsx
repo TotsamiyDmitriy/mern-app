@@ -105,7 +105,7 @@ const UpdateListing: React.FC = () => {
   };
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (e) => {
-    if (e.target.id === 'rent' || e.target.id === 'sell') {
+    if (e.target.id === 'rent' || e.target.id === 'sale') {
       setFormData({
         ...formData,
         type: e.target.id,
@@ -193,12 +193,12 @@ const UpdateListing: React.FC = () => {
               <input
                 type="checkbox"
                 className="w-5"
-                name="sell"
+                name="sale"
                 onChange={handleChange}
-                checked={formData.type === 'sell'}
-                id="sell"
+                checked={formData.type === 'sale'}
+                id="sale"
               />
-              <label htmlFor="sell">Sell</label>
+              <label htmlFor="sale">Sale</label>
               <input
                 type="checkbox"
                 className="w-5"
