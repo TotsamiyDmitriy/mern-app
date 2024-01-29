@@ -16,7 +16,6 @@ interface IOAuth {
 
 const OAuth: React.FC<IOAuth> = ({ loading, dispatch, navigate }) => {
   const handleGoogleClick = async () => {
-    console.log(import.meta.env.VITE_AUTH_DOMAIN);
     try {
       const provider = new GoogleAuthProvider();
       const auth = getAuth(app);
@@ -31,7 +30,6 @@ const OAuth: React.FC<IOAuth> = ({ loading, dispatch, navigate }) => {
       const { data } = await axios.post<User, AxiosResponse<User>>('/api/auth/google', userData);
       dispatch(signInSuccess(data));
 
-      console.log(data);
       navigate('/');
     } catch (error) {
       console.log(error);

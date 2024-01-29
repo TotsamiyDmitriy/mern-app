@@ -37,7 +37,6 @@ const UpdateListing: React.FC = () => {
   React.useEffect(() => {
     const fetchListing = async () => {
       const { data } = await axios.get(`/api/listing/get/${params.id}`);
-      console.log(data);
       if (data.success === false) {
         return;
       }
@@ -140,7 +139,6 @@ const UpdateListing: React.FC = () => {
         `/api/listing/update/${params.id}`,
         { ...formData, userRef: currentUser?._id },
       );
-      console.log(data);
       setIsLoading(false);
       navigate(`/listing/${data._id}`);
     } catch (error) {

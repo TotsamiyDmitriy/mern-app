@@ -13,10 +13,6 @@ const Home = () => {
   const [saleListings, setSaleListings] = useState<ListingType[]>();
   const [rentListings, setRentListings] = useState<ListingType[]>();
 
-  console.log(offerListings);
-  console.log(saleListings);
-  console.log(rentListings);
-
   SwiperCore.use([Navigation]);
 
   React.useEffect(() => {

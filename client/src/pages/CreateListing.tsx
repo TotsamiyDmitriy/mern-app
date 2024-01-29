@@ -127,7 +127,7 @@ const CreateListing: React.FC = () => {
         '/api/listing/create',
         { ...formData, userRef: currentUser?._id },
       );
-      console.log(data);
+
       setIsLoading(false);
       navigate(`/listing/${data._id}`);
     } catch (error) {

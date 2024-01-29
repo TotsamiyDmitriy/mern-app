@@ -66,7 +66,6 @@ const Search: React.FC = () => {
       }
       setListings(data);
       setLoading(false);
-      console.log(data);
     };
     fetchListings();
   }, [location.search]);
