@@ -2,10 +2,11 @@ import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
 import React from 'react';
 import { app } from '../utils/firebase';
 import axios, { AxiosResponse } from 'axios';
-import { AxiosSignUpType } from '../types/signUp';
+
 import { AppDispatch } from '../redux/store';
 import { signInSuccess } from '../redux/user/userSlice';
 import { NavigateFunction } from 'react-router-dom';
+import { User } from '../types/userSlice';
 
 interface IOAuth {
   dispatch: AppDispatch;
@@ -27,10 +28,7 @@ const OAuth: React.FC<IOAuth> = ({ loading, dispatch, navigate }) => {
         email: user.email,
         photoURL: user.photoURL,
       };
-      const { data } = await axios.post<AxiosSignUpType, AxiosResponse<AxiosSignUpType>>(
-        '/api/auth/google',
-        userData,
-      );
+      const { data } = await axios.post<User, AxiosResponse<User>>('/api/auth/google', userData);
       dispatch(signInSuccess(data));
 
       console.log(data);
